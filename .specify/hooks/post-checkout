@@ -1,0 +1,30 @@
+#!/bin/bash
+# Post-checkout hook: Runs after feature branch and directory creation
+# Arguments: $1 = feature description
+# Environment: BRANCH_NAME, SPEC_FILE, FEATURE_NUM available
+
+# Example: Create GitHub issue
+# if command -v gh >/dev/null 2>&1; then
+#     gh issue create --title "Spec: $1" --body "Branch: $BRANCH_NAME, Spec: $SPEC_FILE"
+# fi
+
+# Example: Send notification
+# echo "Feature $FEATURE_NUM created: $BRANCH_NAME" | mail -s "New Spec" team@company.com
+
+# Default: Do nothing
+
+# Parse arguments
+FEATURE_DESCRIPTION="$1"
+FEATURE_NUM="$2"
+BRANCH_NAME="$3"
+SPEC_FILE="$4"
+
+#echo "Post-checkout hook triggered for feature: $FEATURE_DESCRIPTION"
+#echo "Feature number: $FEATURE_NUM"
+#echo "Branch name: $BRANCH_NAME"
+#echo "Spec file: $SPEC_FILE"
+
+# Link the branch to the issue (Development section)
+gh issue develop "$FEATURE_NUM" --name "$BRANCH_NAME" --checkout || true
+
+exit 0

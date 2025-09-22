@@ -1,11 +1,16 @@
 #!/bin/bash
 # Post-specify hook: Runs after spec file is written and completed
-# Arguments: $1 = feature description
-# Environment: BRANCH_NAME, SPEC_FILE, FEATURE_NUM available
+# Arguments: $1 = feature description, $2 = feature number, $3 = branch name, $4 = spec file path
+
+# Parse arguments
+FEATURE_DESCRIPTION="$1"
+FEATURE_NUM="$2"
+BRANCH_NAME="$3"
+SPEC_FILE="$4"
 
 # 1. Commit and push the spec file
 git add "$SPEC_FILE"
-git commit -m "Complete spec $FEATURE_NUM: $1"
+git commit -m "Complete spec $FEATURE_NUM: $FEATURE_DESCRIPTION"
 git push -u origin "$BRANCH_NAME"
 
 # 2. Link branch to GitHub issue and update status
@@ -13,18 +18,15 @@ if command -v gh >/dev/null 2>&1; then
     # Get the issue number from feature number (they match)
     ISSUE_NUM="$FEATURE_NUM"
 
-    # Link the branch to the issue (Development section)
-    gh issue develop "$ISSUE_NUM" --branch "$BRANCH_NAME" || true
-
     # Update issue with completion details
     gh issue comment "$ISSUE_NUM" --body "✅ Specification completed!
 
-- **Branch:** [\`$BRANCH_NAME\`](https://github.com/\$(gh repo view --json nameWithOwner -q .nameWithOwner)/tree/$BRANCH_NAME)
-- **Spec File:** [\`$SPEC_FILE\`](https://github.com/\$(gh repo view --json nameWithOwner -q .nameWithOwner)/blob/$BRANCH_NAME/$SPEC_FILE)
-- **Status:** Ready for review"
+- **Branch:** [\`$BRANCH_NAME\`](https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/tree/$BRANCH_NAME)
+- **Spec File:** [\`$SPEC_FILE\`](https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/blob/$BRANCH_NAME/specs/$BRANCH_NAME)
+- **Status:** Ready for plan"
 
     # Add labels to indicate spec is complete
-    gh issue edit "$ISSUE_NUM" --add-label "spec-complete"
+    gh issue edit "$ISSUE_NUM" --add-label "spec-complete" || true
 fi
 
 # Example: Send completion notification
