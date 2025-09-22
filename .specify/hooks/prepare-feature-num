@@ -11,6 +11,9 @@
 # ISSUE_URL=$(gh issue create --title "Spec: $1" --body "Specification development")
 # ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -o '[0-9]*$')
 # echo "$ISSUE_NUMBER"
-echo "999"
+ISSUE_URL=$(gh issue create --title "Spec: $1" --body "Specification development")
+ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -o '[0-9]*$')
+echo "$ISSUE_NUMBER"
+
 # Default: Let script auto-increment (output nothing)
 exit 0
